@@ -1,0 +1,55 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <style type="text/css">
+            body{
+                background-image: url(Gaming.gif);
+                background-size: cover;
+            }
+            
+            .games{
+                color: darkolivegreen;
+
+            }
+
+            .games :hover{
+                color: aqua;
+                background-color: brown;
+            }
+
+             
+body{
+    animation: transitionIn 0.75s;
+}
+
+@keyframes transitionIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.text{
+    color: white;
+}
+        </style>
+        <div class="games">
+        Games list:
+        <br>
+        <a href="game.html">Tic Tac Toe</a>
+        <br>
+        <a href="cps.html">Cps clicker</a>
+        <br>
+        <a href="Minesweeper.html">Minesweeper</a>
+        </div>
+        <div class="text">
+        Note: Minesweeper is still in progress.
+        </div>
+        </body>
+        </html>

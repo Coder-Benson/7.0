@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minesweeper</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+    .container {
+        display: inline-block;
+    }
+    .cell {
+        width: 50px;
+        height: 50px;
+        border: 1px solid #ccc;
+        display: inline-block;
+        text-align: center;
+        line-height: 50px;
+        cursor: pointer;
+    }
+    #settings {
+        margin-top: 20px;
+    }
+</style>
+</head>
+<body>
+<div id="settings">
+    <label for="gridSize">Grid Size:</label>
+    <input type="number" id="gridSize" min="3" max="20" value="5">
+    <label for="numMines">Number of Mines:</label>
+    <input type="number" id="numMines" min="1" max="50" value="3">
+    <button onclick="startGame()">Start Game</button>
+</div>
+<div class="container"></div>
+
+<script>
+    let gridSizeInput = document.getElementById('gridSize');
+    let numMinesInput = document.getElementById('numMines');
+    let container = document.querySelector('.container');
+    let grid = [];
+    let gridSize = parseInt(gridSizeInput.value);
+    let numMines = parseInt(numMinesInput.value);
+
+    function startGame() {
+        gridSize = parseInt(gridSizeInput.value);
+        numMines = parseInt(numMinesInput.value);
+        container.innerHTML = '';
+        grid = [];
+        createGrid();
+        plantMines();
+    }
+
+    function createGrid() {
+        for (let i = 0; i < gridSize; i++) {
+            let row = [];
+            for (let j = 0; j < gridSize; j++) {
+                let cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.row = i;
+                cell.dataset.col = j;
+                cell.dataset.state = 'hidden';
+                cell.addEventListener('click', handleCellClick);
+                container.appendChild(cell);
+                row.push(cell);
+            }
+            grid.push(row);
+            container.appendChild(document.createElement('br'));
+        }
+    }
+
+    function plantMines() {
+        let plantedMines = 0;
+        while (plantedMines < numMines) {
+            let randRow = Math.floor(Math.random() * gridSize);
+            let randCol = Math.floor(Math.random() * gridSize);
+            if (grid[randRow][randCol].dataset.state !== 'mine') {
+                grid[randRow][randCol].dataset.state = 'mine';
+                plantedMines++;
+            }
+        }
+    }
+
+    function handleCellClick(event) {
+        let cell = event.target;
+        if (cell.dataset.state === 'hidden') {
+            if (cell.dataset.state === 'mine') {
+                revealMines();
+                alert('Game Over!');
+            } else {
+                let row = parseInt(cell.dataset.row);
+                let col = parseInt(cell.dataset.col);
+                let count = countAdjacentMines(row, col);
+                cell.textContent = count;
+                cell.style.backgroundColor = '#ddd';
+                cell.dataset.state = 'revealed';
+                if (count === 0) {
+                    revealEmptyCells(row, col);
+                }
+            }
+        }
+    }
+
+    function countAdjacentMines(row, col) {
+        let count = 0;
+        for (let i = Math.max(0, row - 1); i <= Math.min(gridSize - 1, row + 1); i++) {
+            for (let j = Math.max(0, col - 1); j <= Math.min(gridSize - 1, col + 1); j++) {
+                if (!(i === row && j === col) && grid[i][j].dataset.state === 'mine') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    function revealEmptyCells(row, col) {
+        for (let i = Math.max(0, row - 1); i <= Math.min(gridSize - 1, row + 1); i++) {
+            for (let j = Math.max(0, col - 1); j <= Math.min(gridSize - 1, col + 1); j++) {
+                let cell = grid[i][j];
+                if (cell.dataset.state === 'hidden') {
+                    let count = countAdjacentMines(i, j);
+                    cell.textContent = count;
+                    cell.style.backgroundColor = '#ddd';
+                    cell.dataset.state = 'revealed';
+                    if (count === 0) {
+                        revealEmptyCells(i, j);
+                    }
+                }
+            }
+        }
+    }
+
+    function revealMines() {
+        for (let i = 0; i < gridSize; i++) {
+            for (let j = 0; j < gridSize; j++) {
+                let cell = grid[i][j];
+                if (cell.dataset.state === 'mine') {
+                    cell.textContent = '💣';
+                    cell.style.backgroundColor = 'red';
+                }
+            }
+        }
+    }
+
+    createGrid();
+    plantMines();
+</script>
+</body>
+</html>
